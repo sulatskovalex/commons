@@ -1,4 +1,4 @@
-module github.com/sulatskovalex/chat_commons
+module github.com/sulatskovalex/commons
 
 go 1.16
 
