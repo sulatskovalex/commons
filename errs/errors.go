@@ -22,6 +22,9 @@ const (
 
 	UnauthorizedCode = 4
 	UnauthorizedMsg  = "unauthorized"
+
+	AccessDeniedCode = 5
+	AccessDeniedMsg  = "access denied"
 )
 
 var (
@@ -30,6 +33,7 @@ var (
 	UnknownContentTypeErr = twirp.NewError(twirp.InvalidArgument, UnknownContentTypeMsg)
 	ForbiddenErr          = twirp.NewError(twirp.PermissionDenied, ForbiddenMsg)
 	UnauthorizedErr       = twirp.NewError(twirp.Unauthenticated, UnauthorizedMsg)
+	AccessDeniedErr       = twirp.NewError(twirp.PermissionDenied, AccessDeniedMsg)
 )
 
 func ToErrorCode(message string) int {
@@ -42,6 +46,8 @@ func ToErrorCode(message string) int {
 		return UnauthorizedCode
 	case ForbiddenMsg:
 		return ForbiddenCode
+	case AccessDeniedMsg:
+		return AccessDeniedCode
 	}
 	return InternalCode
 }

@@ -1,7 +1,6 @@
 package cmhttp
 
 import (
-	"encoding/json"
 	"github.com/sulatskovalex/commons/errs"
 	"github.com/twitchtv/twirp"
 	"net/http"
@@ -10,6 +9,9 @@ import (
 type Response struct {
 	Response interface{} `json:"response,omitempty"`
 	Error    *errs.Error `json:"error,omitempty"`
+}
+type Encoder interface {
+	Encode(interface{}) error
 }
 
 func Success(response interface{}) *Response {
@@ -28,22 +30,22 @@ func FailureErr(err *errs.Error) *Response {
 func New(response interface{}) *Response {
 	return &Response{Response: response}
 }
-func WriteResponse(encoder json.Encoder, w http.ResponseWriter, response interface{}) {
+func WriteResponse(encoder Encoder, w http.ResponseWriter, response interface{}) {
 	WriteApiResponse(encoder, w, New(response))
 }
-func WriteApiResponse(encoder json.Encoder, w http.ResponseWriter, response *Response) {
+func WriteApiResponse(encoder Encoder, w http.ResponseWriter, response *Response) {
 	w.WriteHeader(http.StatusOK)
 	encoder.Encode(response)
 }
-func WriteHttpError(encoder json.Encoder, w http.ResponseWriter, code int) {
+func WriteHttpError(encoder Encoder, w http.ResponseWriter, code int) {
 	w.WriteHeader(code)
 	encoder.Encode(httpErr(code))
 }
-func WriteApiError(encoder json.Encoder, w http.ResponseWriter, err *Response) {
+func WriteApiError(encoder Encoder, w http.ResponseWriter, err *Response) {
 	w.WriteHeader(http.StatusOK)
 	encoder.Encode(err)
 }
-func WriteError(encoder json.Encoder, w http.ResponseWriter, err error) {
+func WriteError(encoder Encoder, w http.ResponseWriter, err error) {
 	if twerr, ok := err.(twirp.Error); ok {
 		code := twirp.ServerHTTPStatusFromErrorCode(twerr.Code())
 		msg := twerr.Msg()
